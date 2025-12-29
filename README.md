@@ -81,6 +81,16 @@ Derived datasets include:
 
 ---
 
+## Visual Summary
+
+### Volatility Forecast Comparison
+![Volatility Forecasts](outputs/figures/volatility_forecast_comparison.png)
+
+### Return Forecast Comparison
+![Return Forecasts](outputs/figures/return_forecast_comparison.png)
+
+---
+
 ## Repository Structure
 
 ```
