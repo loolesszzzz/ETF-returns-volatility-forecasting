@@ -1,12 +1,17 @@
 # ETF Returns & Volatility Forecasting
 
+## Project Summary
+
+Built an end-to-end time-series forecasting pipeline to predict SPY ETF volatility using ARIMA, ETS, and GARCH models. Conducted out-of-sample testing (2022–2024) comparing model performance against naïve benchmarks using MAE and RMSE metrics. Demonstrated that daily returns show minimal predictability (ARIMA matched baseline performance), while volatility exhibits strong persistence and clustering. GARCH captured conditional heteroskedasticity and responded to market shocks 1-2 days faster than smoothing models, making it suitable for risk monitoring and stress testing applications despite higher point forecast error. Results support volatility-based risk management frameworks over directional return forecasting for daily horizons.
+
+---
+
 ## Overview
 
-This repository presents an end-to-end analysis of ETF return and volatility dynamics using classical time-series models.
-The project focuses on **understanding predictability, benchmarking models, and interpreting results in a finance and risk-management context**, rather than attempting directional trading strategies.
+This repository presents an end-to-end analysis of ETF return and volatility dynamics using classical time-series models. 
+The project focuses on understanding predictability, benchmarking models, and interpreting results in a finance and risk-management context, rather than attempting directional trading strategies.
 
 Using SPY (S&P 500 ETF) daily data, the analysis evaluates:
-
 * The limited predictability of daily returns
 * The persistence and clustering of volatility
 * The relative performance of simple benchmarks versus more structured models
@@ -119,6 +124,28 @@ Derived datasets include:
 
 ---
 
+## Business Application Example
+
+### Risk Monitoring Use Case
+
+**Scenario**: A risk team manages a $50M equity portfolio and uses volatility forecasts to set position limits.
+
+**Current approach**: Fixed 2% position limit per stock.
+
+**Volatility-adjusted approach**:
+- When GARCH forecasts volatility > 20% (high regime): reduce position limit to 1.5%
+- When GARCH forecasts volatility < 15% (low regime): maintain 2% limit
+- During volatility spikes (e.g., March 2020): GARCH signals elevated risk 1-2 days earlier than ETS
+
+**Impact**: 
+- More responsive risk controls during market stress
+- Prevents oversized positions during high-volatility periods
+- Maintains efficiency during stable markets
+
+This demonstrates the value of conditional variance modelling over simple persistence forecasts, even when GARCH has higher RMSE on point forecasts.
+
+---
+
 ## Repository Structure
 
 ```
@@ -154,6 +181,55 @@ ETF-Returns-Volatility-Forecasting/
 
 ---
 
+## Installation & Usage
+
+### Prerequisites
+- Python 3.8+
+- Jupyter Notebook or JupyterLab
+
+### Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/loolesszzzz/ETF-Returns-Volatility-Forecasting.git
+cd ETF-Returns-Volatility-Forecasting
+```
+
+2. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Run the analysis**
+
+Execute notebooks in order:
+```bash
+jupyter notebook
+```
+
+Then open and run:
+- `01_data_ingestion_and_cleaning.ipynb` — loads and cleans raw data
+- `02_exploratory_analysis_and_transforms.ipynb` — generates returns and volatility measures
+- `03_return_models_arima.ipynb` — fits ARIMA return forecasts
+- `04_volatility_models_ets.ipynb` — fits ETS volatility forecasts
+- `05_volatility_models_garch.ipynb` — fits GARCH volatility forecasts
+- `06_model_evaluation_and_comparison.ipynb` — compares model performance
+- `07_business_interpretation_and_forecast.ipynb` — business summary and interpretation
+
+**Outputs** are saved to:
+- `outputs/figures/` — visualisations
+- `outputs/tables/` — performance metrics
+- `outputs/forecasts/` — forecast data
+
+### Quick Start (View Results Only)
+
+To view results without re-running analysis:
+1. Check `outputs/figures/` for visualisations
+2. Check `outputs/tables/` for performance metrics
+3. Read `07_business_interpretation_and_forecast.ipynb` for business summary
+
+---
+
 ## Notes on Design Choices
 
 * **Notebooks are the authoritative analysis** and remain self-contained to preserve reproducibility.
@@ -168,19 +244,24 @@ ETF-Returns-Volatility-Forecasting/
 
 ## Limitations and Extensions
 
-**Limitations**
+### Current Scope
 
-* Single asset
-* One-step forecasting horizon
-* Normal error assumption in GARCH
-* Realised volatility is backward-looking
+This analysis focused on SPY to establish a robust baseline methodology before scaling to multi-asset applications. The framework is designed to extend to:
 
-**Possible Extensions**
+- **Multi-asset portfolios**: The modelling pipeline can be applied to sector ETFs, bonds, or commodities with minimal modification
+- **Longer forecast horizons**: Multi-step forecasting for weekly or monthly risk budgeting
+- **Alternative volatility measures**: Parkinson or Garman-Klass estimators for intraday range-based volatility
+- **Heavy-tailed distributions**: Student-t GARCH for better capturing extreme events
+- **Portfolio risk integration**: Direct linkage to VaR, Expected Shortfall, or risk-adjusted return metrics
 
-* Multi-asset analysis
-* Alternative volatility measures (e.g. Parkinson, Garman–Klass)
-* Heavy-tailed GARCH distributions
-* Integration with portfolio risk metrics (VaR, ES)
+### Known Constraints
+
+- One-step forecasting horizon limits application to daily risk monitoring
+- Normal error assumption in GARCH may underestimate tail risk during extreme events
+- Realised volatility is backward-looking; alternative forward-looking measures (e.g., implied volatility) could improve validation
+- No transaction costs or portfolio-level simulation included in current analysis
+
+Future iterations will prioritise multi-asset coverage and integration with risk budgeting frameworks.
 
 ---
 
