@@ -4,6 +4,8 @@
 
 Built an end-to-end time-series forecasting pipeline to predict SPY ETF volatility using ARIMA, ETS, and GARCH models. Conducted out-of-sample testing (2022–2024) comparing model performance against naïve benchmarks using MAE and RMSE metrics. Demonstrated that daily returns show minimal predictability (ARIMA matched baseline performance), while volatility exhibits strong persistence and clustering. GARCH captured conditional heteroskedasticity and responded to market shocks 1-2 days faster than smoothing models, making it suitable for risk monitoring and stress testing applications despite higher point forecast error. Results support volatility-based risk management frameworks over directional return forecasting for daily horizons.
 
+**Tech Stack**: Python (pandas, statsmodels, arch), PostgreSQL, Power BI, SQL
+
 ---
 
 ## Overview
@@ -146,8 +148,35 @@ This demonstrates the value of conditional variance modelling over simple persis
 
 ---
 
-## Repository Structure
+## Power BI Integration
 
+This project includes an interactive Power BI dashboard for operational risk monitoring and decision support.
+
+![Power BI Dashboard](outputs/figures/powerbi_dashboard.png)
+
+### Dashboard Features
+- **Real-time forecast view**: Latest GARCH volatility forecast with risk classification (Low/Medium/High)
+- **Model comparison table**: Performance metrics (MAE, RMSE) across all three models
+- **Historical tracking**: Interactive time-series chart comparing GARCH forecasts vs realised volatility
+- **Regime analysis**: Distribution of days across Low, Medium, and High volatility regimes
+- **Date filtering**: Dynamic slicer to analyze specific time periods
+
+### Data Pipeline Architecture
+1. **Python modelling**: ARIMA, ETS, and GARCH models generate forecasts
+2. **PostgreSQL storage**: Forecasts, performance metrics, and regime classifications stored in relational database
+3. **SQL queries**: Pre-built analytical queries for model comparison and rolling performance metrics
+4. **Power BI visualization**: Live connection to PostgreSQL for interactive analysis and monitoring
+
+The complete SQL schema and queries are available in the `sql/` directory. The Power BI file can be opened in Power BI Desktop to explore the dashboard interactively.
+
+**Files**:
+- `powerbi/ETF_Volatility_Dashboard.pbix` — Power BI dashboard file
+- `sql/` — SQL queries for data extraction and analysis
+- `src/load_data_to_postgres.py` — Python script to populate PostgreSQL database
+
+---
+
+## Repository Structure
 ```
 ETF-Returns-Volatility-Forecasting/
 │
@@ -168,7 +197,18 @@ ETF-Returns-Volatility-Forecasting/
 │   ├── data_utils.py        # Reusable data-loading utilities
 │   ├── diagnostics.py       # Diagnostic and statistical helpers
 │   ├── plotting.py          # Reusable plotting functions
-│   └── evaluation.py        # Shared evaluation logic
+│   ├── evaluation.py        # Shared evaluation logic
+│   └── load_data_to_postgres.py  # Database loading script
+│
+├── sql/
+│   ├── 01_latest_forecast.sql
+│   ├── 02_model_comparison.sql
+│   ├── 03_rolling_performance.sql
+│   ├── 04_volatility_regimes.sql
+│   └── 05_powerbi_main_dataset.sql
+│
+├── powerbi/
+│   └── ETF_Volatility_Dashboard.pbix
 │
 ├── outputs/
 │   ├── figures/             # Final visualisations
@@ -186,6 +226,8 @@ ETF-Returns-Volatility-Forecasting/
 ### Prerequisites
 - Python 3.8+
 - Jupyter Notebook or JupyterLab
+- PostgreSQL 12+ (optional, for database integration)
+- Power BI Desktop (optional, for interactive dashboard)
 
 ### Setup
 
@@ -221,12 +263,35 @@ Then open and run:
 - `outputs/tables/` — performance metrics
 - `outputs/forecasts/` — forecast data
 
+### Database Integration (Optional)
+
+To replicate the PostgreSQL + Power BI integration:
+
+1. **Set up PostgreSQL database**
+```bash
+# Create database in pgAdmin4 or command line
+createdb volatility_forecasting
+```
+
+2. **Load data into PostgreSQL**
+```bash
+# Update database credentials in src/load_data_to_postgres.py
+python src/load_data_to_postgres.py
+```
+
+3. **Open Power BI dashboard**
+```bash
+# Open powerbi/ETF_Volatility_Dashboard.pbix in Power BI Desktop
+# Update database connection settings if needed
+```
+
 ### Quick Start (View Results Only)
 
 To view results without re-running analysis:
 1. Check `outputs/figures/` for visualisations
 2. Check `outputs/tables/` for performance metrics
 3. Read `07_business_interpretation_and_forecast.ipynb` for business summary
+4. Open `powerbi/ETF_Volatility_Dashboard.pbix` in Power BI Desktop for interactive dashboard
 
 ---
 
@@ -234,11 +299,11 @@ To view results without re-running analysis:
 
 * **Notebooks are the authoritative analysis** and remain self-contained to preserve reproducibility.
 * The `src/` directory contains reusable utilities intended for:
-
-  * Future notebooks
-  * Automation or scheduled runs
-  * Extension to additional assets or horizons
+  + Future notebooks
+  + Automation or scheduled runs
+  + Extension to additional assets or horizons
 * Outputs are explicitly saved to separate modelling from consumption and reporting.
+* The **PostgreSQL + Power BI integration** demonstrates production-ready analytics workflows used in finance and risk teams.
 
 ---
 
