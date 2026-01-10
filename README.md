@@ -1,24 +1,9 @@
 # ETF Returns & Volatility Forecasting
 
-## Project Summary
+## Executive Summary
+Built an end-to-end time-series pipeline to monitor SPY ETF risk. This project demonstrates the transition from raw market data to a production-ready Power BI dashboard, evaluating ARIMA, ETS, and GARCH models. While daily returns remain unpredictable (confirming Efficient Market Hypothesis), the **GARCH(1,1) model detected market shocks 1-2 days faster** than traditional smoothing methods, providing a superior framework for risk-adjusted capital allocation and stress testing.
 
-Built an end-to-end time-series forecasting pipeline to predict SPY ETF volatility using ARIMA, ETS, and GARCH models. Conducted out-of-sample testing (2022–2024) comparing model performance against naïve benchmarks using MAE and RMSE metrics. Demonstrated that daily returns show minimal predictability (ARIMA matched baseline performance), while volatility exhibits strong persistence and clustering. GARCH captured conditional heteroskedasticity and responded to market shocks 1-2 days faster than smoothing models, making it suitable for risk monitoring and stress testing applications despite higher point forecast error. Results support volatility-based risk management frameworks over directional return forecasting for daily horizons.
-
-**Tech Stack**: Python (pandas, statsmodels, arch), PostgreSQL, Power BI, SQL
-
----
-
-## Overview
-
-This repository presents an end-to-end analysis of ETF return and volatility dynamics using classical time-series models. 
-The project focuses on understanding predictability, benchmarking models, and interpreting results in a finance and risk-management context, rather than attempting directional trading strategies.
-
-Using SPY (S&P 500 ETF) daily data, the analysis evaluates:
-* The limited predictability of daily returns
-* The persistence and clustering of volatility
-* The relative performance of simple benchmarks versus more structured models
-
-The emphasis is on **model evaluation, robustness, and business interpretation**.
+**Tech Stack**: Python (pandas, statsmodels, arch), PostgreSQL, Power BI, SQL.
 
 ---
 
@@ -92,22 +77,21 @@ Derived datasets include:
 
 ### Returns Forecasting
 
-| Model | MAE | RMSE | vs Baseline |
-|-------|-----|------|-------------|
-| Baseline Mean | 0.00810 | 0.01103 | — |
-| ARIMA(1,0,1) | 0.00826 | 0.01116 | **-1.9%** ↓ |
+| Model | MAE | RMSE | Performance vs Baseline |
+| :--- | :--- | :--- | :--- |
+| Baseline Mean | 0.00810 | 0.01103 | Reference |
+| ARIMA(1,0,1) | 0.00826 | 0.01116 | -1.9% (No Improvement) |
 
 **Key Takeaway**: ARIMA provides no improvement. Daily return forecasts collapse toward zero, highlighting the dominance of noise over signal. Not suitable for directional trading.
 
 ### Volatility Forecasting
+| Model | MAE | RMSE | Utility |
+| :--- | :--- | :--- | :--- |
+| Naïve Persistence | 0.000351 | 0.000592 | Best for stable periods |
+| ETS (Smoothing) | 0.000351 | 0.000592 | Best for regime tracking |
+| **GARCH(1,1)** | 0.001493 | 0.002026 | **Best for Shock Response** |
 
-| Model | MAE | RMSE | vs Baseline |
-|-------|-----|------|-------------|
-| Naïve Persistence | 0.000351 | 0.000592 | — |
-| ETS | 0.000351 | 0.000592 | **0%** |
-| GARCH(1,1) | 0.001493 | 0.002026 | **-325%** ↓ |
-
-**Key Takeaway**: Simple persistence benchmarks excel at one-day horizons. GARCH shows higher forecast error due to comparing conditional variance forecasts against smoothed realised volatility (metric mismatch). However, GARCH's responsiveness to shocks makes it valuable for **risk scenario analysis and tail event monitoring**.
+**Key Takeaway**: Simple persistence benchmarks excel at one-day horizons. GARCH shows higher forecast error due to comparing conditional variance forecasts against smoothed realised volatility (metric mismatch). However, GARCH's responsiveness to shocks makes it valuable for **risk scenario analysis and tail event monitoring**. Meanwhile GARCH is the only model that successfully identifies **Conditional Heteroskedasticity**. In a Risk Analyst context, GARCH is the "Safety Alarm"—it is preferred for its ability to flag rising risk rapidly, even if its exact point estimate is noisier.
 
 ---
 
@@ -148,8 +132,7 @@ This demonstrates the value of conditional variance modelling over simple persis
 
 ---
 
-## Power BI Integration
-
+## Business Intelligence & Reporting
 This project includes an interactive Power BI dashboard for operational risk monitoring and decision support.
 
 ![Power BI Dashboard](outputs/figures/powerbi_dashboard.png)
@@ -159,13 +142,13 @@ This project includes an interactive Power BI dashboard for operational risk mon
 - **Model comparison table**: Performance metrics (MAE, RMSE) across all three models
 - **Historical tracking**: Interactive time-series chart comparing GARCH forecasts vs realised volatility
 - **Regime analysis**: Distribution of days across Low, Medium, and High volatility regimes
-- **Date filtering**: Dynamic slicer to analyze specific time periods
+- **Date filtering**: Dynamic slicer to analyse specific time periods
 
 ### Data Pipeline Architecture
 1. **Python modelling**: ARIMA, ETS, and GARCH models generate forecasts
 2. **PostgreSQL storage**: Forecasts, performance metrics, and regime classifications stored in relational database
 3. **SQL queries**: Pre-built analytical queries for model comparison and rolling performance metrics
-4. **Power BI visualization**: Live connection to PostgreSQL for interactive analysis and monitoring
+4. **Power BI visualisation**: Live connection to PostgreSQL for interactive analysis and monitoring
 
 The complete SQL schema and queries are available in the `sql/` directory. The Power BI file can be opened in Power BI Desktop to explore the dashboard interactively.
 
@@ -221,7 +204,8 @@ ETF-Returns-Volatility-Forecasting/
 
 ---
 
-## Installation & Usage
+<details>
+<summary><strong>Installation & Usage</strong></summary>
 
 ### Prerequisites
 - Python 3.8+
@@ -292,10 +276,12 @@ To view results without re-running analysis:
 2. Check `outputs/tables/` for performance metrics
 3. Read `07_business_interpretation_and_forecast.ipynb` for business summary
 4. Open `powerbi/ETF_Volatility_Dashboard.pbix` in Power BI Desktop for interactive dashboard
+</details>
 
 ---
 
-## Notes on Design Choices
+<details>
+<summary><strong>Notes on Design Choices</strong></summary>
 
 * **Notebooks are the authoritative analysis** and remain self-contained to preserve reproducibility.
 * The `src/` directory contains reusable utilities intended for:
@@ -304,10 +290,12 @@ To view results without re-running analysis:
   + Extension to additional assets or horizons
 * Outputs are explicitly saved to separate modelling from consumption and reporting.
 * The **PostgreSQL + Power BI integration** demonstrates production-ready analytics workflows used in finance and risk teams.
+</details>
 
 ---
 
-## Limitations and Extensions
+<details>
+<summary><strong>Limitations and Extensions</strong></summary>
 
 ### Current Scope
 
@@ -327,6 +315,7 @@ This analysis focused on SPY to establish a robust baseline methodology before s
 - No transaction costs or portfolio-level simulation included in current analysis
 
 Future iterations will prioritise multi-asset coverage and integration with risk budgeting frameworks.
+</details>
 
 ---
 
