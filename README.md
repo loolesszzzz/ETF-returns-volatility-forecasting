@@ -52,7 +52,7 @@ Derived datasets include:
 * **Error Metrics**: Compared models using MAE and RMSE; point accuracy favoured simple benchmarks due to the high autocorrelation of 21-day RV.
 * **Forecast Efficiency**: Conducted Mincer-Zarnowitz regressions; ETS proved unbiased (β≈1), while GARCH effectively identified regime shifts despite a slight under-prediction bias.
 * **Risk Validation**: Performed 95% Value-at-Risk (VaR) backtesting; a 3.45% violation rate and Kupiec Test results confirmed the model is robust and conservative for risk management.
-* **Tactical Utility**: Established GARCH as a "fast" signal for real-time risk monitoring, providing superior responsiveness compared to lagging slow realised measures.
+* **Tactical Utility**: Established GARCH as a fast signal for real-time risk monitoring, providing superior responsiveness compared to lagging slow realised measures.
 
 ---
 
