@@ -20,7 +20,8 @@ Built an end-to-end time-series pipeline to monitor SPY ETF risk. This project d
 
 * **Asset**: SPY (S&P 500 ETF)
 * **Frequency**: Daily
-* **Period**: 2010–2024
+* **Training Period**: 2010–2021
+* **Testing Period**: 2022–2024
 * **Source**: Public market data
 
 Derived datasets include:
