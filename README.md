@@ -35,22 +35,24 @@ Derived datasets include:
 
 ### Return Modelling
 
-* Baseline historical mean
-* ARIMA(1,0,1)
-* Expanding-window, one-step-ahead forecasting
-* Out-of-sample evaluation (2022–2024)
+* **Baseline**: Historical mean return (2010–2021) served as the naïve benchmark.
+* **Model Selection**: Evaluated 35 specifications via AICc/BIC; ARIMA(5,0,4) won in-sample, while ARIMA(0,0,1) was selected for out-of-sample parsimony.
+* **Evaluation**: One-step-ahead forecasting (2022–2024) validated the Efficient Market Hypothesis, as the baseline mean outperformed all ARIMA models.
+* **Diagnostics**: Residual analysis confirmed high leptokurtosis (Kurtosis: 13.24) and volatility clustering, necessitating GARCH modelling.
 
 ### Volatility Modelling
 
-* Naïve persistence benchmark
-* Exponential Smoothing (ETS)
-* GARCH(1,1) with conditional variance
-* Comparison against realised volatility
+* **Benchmarks**: Utilised Naïve Persistence and Exponential Smoothing (ETS); α≈0.995 proved volatility follows a near-random walk.
+* **GARCH(1,1)**: Fitted with Student-t innovations (ν≈5.04) to mathematically account for fat-tailed crash risk.
+* **Persistence**: Identified extreme volatility stickiness (α+β=0.989) with a 63-day shock half-life.
+* **Horizon Alignment**: Aggregated daily GARCH forecasts into a 21-day smoothed proxy to enable direct comparison with Realised Volatility (RV).
 
 ### Evaluation Metrics
 
-* Mean Absolute Error (MAE)
-* Root Mean Squared Error (RMSE)
+* **Error Metrics**: Compared models using MAE and RMSE; point accuracy favoured simple benchmarks due to the high autocorrelation of 21-day RV.
+* **Forecast Efficiency**: Conducted Mincer-Zarnowitz regressions; ETS proved unbiased (β≈1), while GARCH effectively identified regime shifts despite a slight under-prediction bias.
+* **Risk Validation**: Performed 95% Value-at-Risk (VaR) backtesting; a 3.45% violation rate and Kupiec Test results confirmed the model is robust and conservative for risk management.
+* **Tactical Utility**: Established GARCH as a "fast" signal for real-time risk monitoring, providing superior responsiveness compared to lagging slow realised measures.
 
 ---
 
